@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: app-api
+    ports:
+      - 3000:3000
+    depends_on:
+      - database
+    volumes:
+      - ./src:/usr/app/src
+    networks:
+      - internal-network
+
+  database:
+    image: mysql
+    container_name: database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    ports:
+      - 3306:3306
+    networks:
+      - internal-network
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  phpmyadmin:
+    depends_on:
+      - database
+    image: phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: example
+      PMA_ARBITRARY: 1
+    ports:
+      - 8080:80
+    networks:
+      - internal-network
+networks:
+  internal-network:
+
+volumes:
+  mysql-data:
